@@ -54,11 +54,13 @@ class WorkoutLogEntry {
 class WorkoutRow {
   final int kg;
   final int reps;
+  final String rowId;
 
-  WorkoutRow({this.kg = 0, this.reps = 0});
+  WorkoutRow(this.rowId, {this.kg = 0, this.reps = 0});
 
   factory WorkoutRow.fromJson(Map<String, dynamic> json) {
     return WorkoutRow(
+      json['rowId'] as String,
       kg: json['kg'] as int,
       reps: json['reps'] as int,
     );
@@ -68,11 +70,24 @@ class WorkoutRow {
     return {
       'kg': kg,
       'reps': reps,
+      'rowId': rowId,
     };
+  }
+
+  WorkoutRow copyWith({
+    int? kg,
+    int? reps,
+    String? rowId,
+  }) {
+    return WorkoutRow(
+      rowId ?? this.rowId,
+      kg: kg ?? this.kg,
+      reps: reps ?? this.reps,
+    );
   }
 
   @override
   String toString() {
-    return 'WorkoutRow(kg: $kg, reps: $reps)';
+    return 'WorkoutRow(rowId: $rowId, kg: $kg, reps: $reps)';
   }
 }

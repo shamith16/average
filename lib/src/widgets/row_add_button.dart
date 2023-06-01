@@ -17,7 +17,6 @@ class RowAddButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: InkWell(
         onTap: onPressed,

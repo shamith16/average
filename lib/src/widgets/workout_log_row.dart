@@ -8,7 +8,7 @@ class WorkoutLogRow extends StatelessWidget {
     this.isLast = false,
     required this.workoutLogEntry,
   })  : assert(isWarmUp || index != null,
-  'Index must be provided for non-warm-up rows'),
+            'Index must be provided for non-warm-up rows'),
         super(key: key);
 
   final bool isWarmUp;
@@ -19,6 +19,7 @@ class WorkoutLogRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Slidable(
+      key: Key(workoutLogEntry.logId),
       endActionPane: ActionPane(motion: const BehindMotion(), children: [
         SlidableAction(
           onPressed: _handleVideoTap,
@@ -46,7 +47,7 @@ class WorkoutLogRow extends StatelessWidget {
                   isWarmUp
                       ? const Icon(Icons.emoji_people_rounded)
                       : Text("${index! + 1}",
-                      style: Theme.of(context).textTheme.titleLarge),
+                          style: Theme.of(context).textTheme.titleLarge),
                 ],
               ),
             ),
@@ -69,17 +70,23 @@ class WorkoutLogRow extends StatelessWidget {
             Positioned(
               left: 80,
               width: MediaQuery.of(context).size.width * 0.2,
-              child: const CustomEditableText(
-                initialValue: 0,
+              child: _buildCustomEditableText(
                 isKg: true,
+                initialValue: isWarmUp
+                    ? workoutLogEntry.warmupRows[index!].kg
+                    : workoutLogEntry.setRows[index!].kg,
+                onValueChanged: (value) => _handleKgChanged(context, value),
               ),
             ),
             Positioned(
               left: 230,
               width: MediaQuery.of(context).size.width * 0.2,
-              child: const CustomEditableText(
-                initialValue: 0,
+              child: _buildCustomEditableText(
                 isKg: false,
+                initialValue: isWarmUp
+                    ? workoutLogEntry.warmupRows[index!].reps
+                    : workoutLogEntry.setRows[index!].reps,
+                onValueChanged: (value) => _handleRepsChanged(context, value),
               ),
             ),
             const Positioned(
@@ -93,6 +100,19 @@ class WorkoutLogRow extends StatelessWidget {
     );
   }
 
+  Widget _buildCustomEditableText({
+    required bool isKg,
+    required int initialValue,
+    required ValueChanged<String> onValueChanged,
+  }) {
+    return CustomEditableText(
+      initialValue: initialValue,
+      isKg: isKg,
+      onChanged: onValueChanged,
+      onEditingComplete: () {}, // You can add your logic here
+    );
+  }
+
   void _handleVideoTap(BuildContext context) {
     // Handle video icon tap
   }
@@ -100,9 +120,49 @@ class WorkoutLogRow extends StatelessWidget {
   void _handleDeleteTap(BuildContext context) {
     final provider = context.read<WorkoutLogProvider>();
     if (isWarmUp) {
-      provider.deleteWarmupRow(workoutLogEntry.logId, index!);
+      provider.deleteWarmupRow(
+          workoutLogEntry.logId, workoutLogEntry.warmupRows[index!].rowId);
     } else {
-      provider.deleteSetRow(workoutLogEntry.logId, index!);
+      provider.deleteSetRow(
+          workoutLogEntry.logId, workoutLogEntry.setRows[index!].rowId);
+    }
+  }
+
+  void _handleKgChanged(BuildContext context, String value) {
+    final provider = context.read<WorkoutLogProvider>();
+    if (isWarmUp) {
+      provider.updateWarmupRow(
+        workoutLogEntry.logId,
+        workoutLogEntry.warmupRows[index!].rowId,
+        int.parse(value),
+        workoutLogEntry.warmupRows[index!].reps,
+      );
+    } else {
+      provider.updateSetRow(
+        workoutLogEntry.logId,
+        workoutLogEntry.setRows[index!].rowId,
+        int.parse(value),
+        workoutLogEntry.setRows[index!].reps,
+      );
+    }
+  }
+
+  void _handleRepsChanged(BuildContext context, String value) {
+    final provider = context.read<WorkoutLogProvider>();
+    if (isWarmUp) {
+      provider.updateWarmupRow(
+        workoutLogEntry.logId,
+        workoutLogEntry.warmupRows[index!].rowId,
+        workoutLogEntry.warmupRows[index!].kg,
+        int.parse(value),
+      );
+    } else {
+      provider.updateSetRow(
+        workoutLogEntry.logId,
+        workoutLogEntry.setRows[index!].rowId,
+        workoutLogEntry.setRows[index!].kg,
+        int.parse(value),
+      );
     }
   }
 }

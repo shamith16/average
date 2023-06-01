@@ -33,9 +33,10 @@ class WorkoutLogCard extends StatelessWidget {
                 .asMap()
                 .entries
                 .map((entry) => WorkoutLogRow(
-              index: entry.key,
-              workoutLogEntry: workoutLogEntry,
-            ))
+                      index: entry.key,
+                      workoutLogEntry: workoutLogEntry,
+                      key: Key(workoutLogEntry.warmupRows[entry.key].rowId),
+                    ))
                 .toList(),
           ),
           Column(
@@ -43,10 +44,11 @@ class WorkoutLogCard extends StatelessWidget {
                 .asMap()
                 .entries
                 .map((entry) => WorkoutLogRow(
-              index: entry.key,
-              isWarmUp: false,
-              workoutLogEntry: workoutLogEntry,
-            ))
+                      index: entry.key,
+                      isWarmUp: false,
+                      workoutLogEntry: workoutLogEntry,
+                      key: Key(workoutLogEntry.setRows[entry.key].rowId),
+                    ))
                 .toList(),
           ),
           const Divider(
@@ -77,10 +79,14 @@ class WorkoutLogCard extends StatelessWidget {
             style: const TextStyle(color: Colors.white, fontSize: 20),
           ),
           const Spacer(),
-          const Icon(
-            Icons.help_outline,
-            color: Colors.grey,
-          ),
+          InkWell(
+              child: const Icon(
+                Icons.help_outline,
+                color: Colors.grey,
+              ),
+              onTap: () =>
+                  Provider.of<WorkoutLogProvider>(context, listen: false)
+                      .printWorkoutLogEntry(workoutLogEntry.logId)),
           const SizedBox(
             width: 8,
           ),

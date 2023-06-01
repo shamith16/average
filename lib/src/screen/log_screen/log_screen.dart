@@ -1,4 +1,4 @@
-import 'package:average/app_exports.dart';
+import 'package:average/app_exports.dart' hide log;
 
 class WorkoutLogScreen extends StatelessWidget {
   const WorkoutLogScreen({Key? key}) : super(key: key);
@@ -41,10 +41,3 @@ class WorkoutLogScreen extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
-
